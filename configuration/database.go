@@ -3,8 +3,10 @@ package configuration
 import (
 	"database/sql"
 	"fmt"
-	"online-store-golang/helper"
+	"online-store-golang/errs"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func NewDatabase(config Config) *sql.DB {
@@ -16,7 +18,7 @@ func NewDatabase(config Config) *sql.DB {
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", username, password, host, port, dbName)
 	db, err := sql.Open("mysql", dsn)
-	helper.PanicIfError(err)
+	errs.PanicIfError(err)
 
 	db.SetMaxIdleConns(5)
 	db.SetMaxOpenConns(20)

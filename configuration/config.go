@@ -1,7 +1,7 @@
 package configuration
 
 import (
-	"online-store-golang/helper"
+	"online-store-golang/errs"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -20,6 +20,6 @@ func (config *configImpl) Get(key string) string {
 
 func New() Config {
 	err := godotenv.Load(".env")
-	helper.PanicIfError(err)
+	errs.PanicIfError(err)
 	return &configImpl{}
 }

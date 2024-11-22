@@ -2,21 +2,28 @@ package main
 
 import (
 	"online-store-golang/configuration"
+	"online-store-golang/controller"
+	repositoryimplementation "online-store-golang/repository/repository_implementation"
+	serviceimplementation "online-store-golang/service/service_implementation"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
 
 	config := configuration.New()
-	configuration.NewDatabase(config)
+	db := configuration.NewDatabase(config)
 
-	app := fiber.New()
+	userRepo := repositoryimplementation.NewUserRepository(db)
+	userService := serviceimplementation.NewUserService(userRepo)
+	userController := controller.NewUserController(userService)
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.Status(200).JSON(fiber.Map{
-			"message": "hello",
-		})
-	})
-	app.Listen(":3000")
+	app := gin.Default()
+
+	defaultRoutes := app.Group("/api/v1")
+	{
+		defaultRoutes.POST("/register", userController.Register)
+	}
+
+	app.Run(":8080")
 }
