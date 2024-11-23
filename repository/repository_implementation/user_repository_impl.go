@@ -19,7 +19,7 @@ func NewUserRepository(Db *sql.DB) repository.UserRepository {
 }
 
 func (userRepo *userRepositoryImpl) Create(ctx context.Context, userpPayload *entity.User) errs.Error {
-	sqlQuery := "INSERT INTO users (username, password) VALUES (?, ?)"
+	sqlQuery := "INSERT INTO user (username, password) VALUES (?, ?)"
 	_, err := userRepo.Db.ExecContext(ctx, sqlQuery, userpPayload.Username, userpPayload.Password)
 
 	if err != nil {
@@ -30,7 +30,7 @@ func (userRepo *userRepositoryImpl) Create(ctx context.Context, userpPayload *en
 }
 
 func (userRepo *userRepositoryImpl) FetchByUsername(ctx context.Context, username string) (*entity.User, errs.Error) {
-	sqlQuery := "SELECT user_id, username, password FROM users WHERE username = ?"
+	sqlQuery := "SELECT user_id, username, password FROM user WHERE username = ?"
 	rows, err := userRepo.Db.QueryContext(ctx, sqlQuery, username)
 
 	if err != nil {

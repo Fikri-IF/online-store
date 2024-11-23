@@ -13,17 +13,17 @@ type UserController interface {
 	Login(ctx *gin.Context)
 }
 
-type userControllerImpl struct {
+type UserControllerImpl struct {
 	Us service.UserService
 }
 
-func NewUserController(userController service.UserService) UserController {
-	return &userControllerImpl{
-		Us: userController,
+func NewUserController(userService service.UserService) UserController {
+	return &UserControllerImpl{
+		Us: userService,
 	}
 }
 
-func (u *userControllerImpl) Register(ctx *gin.Context) {
+func (u *UserControllerImpl) Register(ctx *gin.Context) {
 	userPayload := &model.UserRequest{}
 
 	if err := ctx.ShouldBindJSON(userPayload); err != nil {
@@ -41,7 +41,7 @@ func (u *userControllerImpl) Register(ctx *gin.Context) {
 	ctx.JSON(response.StatusCode, response)
 }
 
-func (u *userControllerImpl) Login(ctx *gin.Context) {
+func (u *UserControllerImpl) Login(ctx *gin.Context) {
 	userPayload := &model.UserRequest{}
 
 	if err := ctx.ShouldBindJSON(userPayload); err != nil {
