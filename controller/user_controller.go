@@ -10,6 +10,7 @@ import (
 
 type UserController interface {
 	Register(ctx *gin.Context)
+	Login(ctx *gin.Context)
 }
 
 type userControllerImpl struct {
@@ -23,7 +24,7 @@ func NewUserController(userController service.UserService) UserController {
 }
 
 func (u *userControllerImpl) Register(ctx *gin.Context) {
-	userPayload := &model.NewUserRequest{}
+	userPayload := &model.UserRequest{}
 
 	if err := ctx.ShouldBindJSON(userPayload); err != nil {
 		errBindJson := errs.NewUnprocessableEntityError("invalid json body request")
@@ -38,4 +39,23 @@ func (u *userControllerImpl) Register(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(response.StatusCode, response)
+}
+
+func (u *userControllerImpl) Login(ctx *gin.Context) {
+	userPayload := &model.UserRequest{}
+
+	if err := ctx.ShouldBindJSON(userPayload); err != nil {
+		errBindJson := errs.NewUnprocessableEntityError("invalid json body request")
+		ctx.AbortWithStatusJSON(errBindJson.Status(), errBindJson.Error())
+		return
+	}
+
+	response, err := u.Us.Login(ctx, userPayload)
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(err.Status(), err)
+		return
+	}
+	ctx.JSON(response.StatusCode, response)
+
 }

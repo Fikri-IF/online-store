@@ -7,5 +7,6 @@ import (
 )
 
 type UserService interface {
-	Add(ctx context.Context, userPayload *model.NewUserRequest) (*model.GetUserResponse, errs.Error)
+	Add(ctx context.Context, userPayload *model.UserRequest) (*model.GeneralResponse, errs.Error)
+	Login(ctx context.Context, userPayload *model.UserRequest) (*model.GeneralResponse, errs.Error)
 }

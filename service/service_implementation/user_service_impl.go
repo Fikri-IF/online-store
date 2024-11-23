@@ -21,7 +21,7 @@ func NewUserService(userRepo repository.UserRepository) service.UserService {
 	}
 }
 
-func (u *userServiceImpl) Add(ctx context.Context, userPayload *model.NewUserRequest) (*model.GetUserResponse, errs.Error) {
+func (u *userServiceImpl) Add(ctx context.Context, userPayload *model.UserRequest) (*model.GeneralResponse, errs.Error) {
 	err := helper.ValidateStruct(userPayload)
 
 	if err != nil {
@@ -45,9 +45,38 @@ func (u *userServiceImpl) Add(ctx context.Context, userPayload *model.NewUserReq
 		return nil, err
 	}
 
-	return &model.GetUserResponse{
+	return &model.GeneralResponse{
 		StatusCode: http.StatusCreated,
 		Message:    "create new user successfully",
 		Data:       nil,
+	}, nil
+}
+
+func (u *userServiceImpl) Login(ctx context.Context, userPayload *model.UserRequest) (*model.GeneralResponse, errs.Error) {
+	err := helper.ValidateStruct(userPayload)
+	if err != nil {
+		return nil, err
+	}
+
+	user, err := u.Ur.FetchByUsername(ctx, userPayload.Username)
+
+	if err != nil {
+		return nil, err
+	}
+
+	isValidPassword := user.ComparePassword(userPayload.Password)
+
+	if !isValidPassword {
+		return nil, errs.NewBadRequestError("invalid password")
+	}
+
+	token := user.GenerateToken()
+
+	return &model.GeneralResponse{
+		StatusCode: http.StatusOK,
+		Message:    "login successfull",
+		Data: &model.TokenResponse{
+			Token: token,
+		},
 	}, nil
 }

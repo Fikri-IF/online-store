@@ -23,6 +23,7 @@ func main() {
 	defaultRoutes := app.Group("/api/v1")
 	{
 		defaultRoutes.POST("/register", userController.Register)
+		defaultRoutes.POST("/login", userController.Login)
 	}
 
 	app.Run(":8080")

@@ -1,7 +1,11 @@
 package model
 
 type GeneralResponse struct {
-	Code    int         `json:"code"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
+	StatusCode int    `json:"status_code"`
+	Message    string `json:"message"`
+	Data       any    `json:"data"`
+}
+
+type TokenResponse struct {
+	Token string `json:"token"`
 }
