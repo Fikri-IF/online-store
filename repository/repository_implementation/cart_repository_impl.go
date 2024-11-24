@@ -98,3 +98,11 @@ func (cartRepo *CartRepositoryImpl) UpdateQuantity(ctx context.Context, cartItem
 	}
 	return nil
 }
+func (cartRepo *CartRepositoryImpl) DeleteItem(ctx context.Context, userId int, productId int) errs.Error {
+	sqlQuery := "delete from cart where user_id = ? and product_id = ?"
+	_, err := cartRepo.Db.ExecContext(ctx, sqlQuery, userId, productId)
+	if err != nil {
+		errs.NewInternalServerError(err.Error())
+	}
+	return nil
+}

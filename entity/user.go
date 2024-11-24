@@ -58,7 +58,7 @@ func (u *User) tokenClaim() jwt.MapClaims {
 	return jwt.MapClaims{
 		"id":       u.Id,
 		"username": u.Username,
-		"exp":      time.Now().UTC().Add(60 * time.Second).Unix(),
+		"exp":      time.Now().UTC().Add(120 * time.Minute).Unix(),
 	}
 }
 

@@ -76,3 +76,23 @@ func (cs *CartServiceImpl) GetUserCart(ctx context.Context, userId int) (*model.
 		Data:       items,
 	}, nil
 }
+
+func (cs *CartServiceImpl) DeleteItem(ctx context.Context, userId int, productId int) (*model.GeneralResponse, errs.Error) {
+	item, err := cs.Cr.GetItem(ctx, userId, productId)
+	if err != nil {
+		return nil, err
+	}
+	if item == nil {
+		return nil, errs.NewNotFoundError("item not found")
+	}
+
+	err = cs.Cr.DeleteItem(ctx, item.UserId, item.ProductId)
+	if err != nil {
+		return nil, err
+	}
+	return &model.GeneralResponse{
+		StatusCode: http.StatusOK,
+		Message:    "item deleted",
+		Data:       nil,
+	}, nil
+}

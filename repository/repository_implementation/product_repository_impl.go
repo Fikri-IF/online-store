@@ -28,6 +28,7 @@ func (productRepo *productRepositoryImpl) FindAll(ctx context.Context) ([]model.
 	if err != nil {
 		return nil, errs.NewInternalServerError(err.Error())
 	}
+	defer rows.Close()
 
 	var products []model.GetProductResponse
 	for rows.Next() {
@@ -57,6 +58,7 @@ func (productRepo *productRepositoryImpl) FindByCategory(ctx context.Context, id
 	if err != nil {
 		return nil, errs.NewInternalServerError(err.Error())
 	}
+	defer rows.Close()
 
 	var products []model.GetProductResponse
 	for rows.Next() {

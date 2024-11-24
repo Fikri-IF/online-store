@@ -36,6 +36,7 @@ func (userRepo *userRepositoryImpl) FetchByUsername(ctx context.Context, usernam
 	if err != nil {
 		return nil, errs.NewInternalServerError(err.Error())
 	}
+	defer rows.Close()
 
 	user := entity.User{}
 	if rows.Next() {
@@ -56,6 +57,7 @@ func (userRepo *userRepositoryImpl) FetchById(ctx context.Context, id int) (*ent
 	if err != nil {
 		return nil, errs.NewInternalServerError(err.Error())
 	}
+	defer rows.Close()
 
 	user := entity.User{}
 	if rows.Next() {

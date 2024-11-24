@@ -44,6 +44,7 @@ func StartApp() {
 	{
 		cartRoutes.POST("/", authService.Authentication(), cartController.AddToCart)
 		cartRoutes.GET("/", authService.Authentication(), cartController.GetUserCart)
+		cartRoutes.DELETE("/:productId", authService.Authentication(), cartController.DeleteItem)
 	}
 
 	app.Run(":8080")

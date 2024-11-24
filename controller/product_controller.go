@@ -33,13 +33,13 @@ func (p *ProductControllerImpl) FindAll(ctx *gin.Context) {
 }
 
 func (p *ProductControllerImpl) FindByCategory(ctx *gin.Context) {
-	photoId, errParam := helper.GetParamId(ctx, "categoryId")
+	categoryId, errParam := helper.GetParamId(ctx, "categoryId")
 
 	if errParam != nil {
 		ctx.AbortWithStatusJSON(errParam.Status(), errParam)
 		return
 	}
-	response, err := p.Ps.FindByCategory(ctx, photoId)
+	response, err := p.Ps.FindByCategory(ctx, categoryId)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(err.Status(), err)
