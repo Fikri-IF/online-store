@@ -17,6 +17,25 @@ type User struct {
 	UpdatedAt time.Time
 }
 
+var invalidToken = errs.NewUnauthenticatedError("invalid token")
+
+func (u *User) parseToken(tokenString string) (*jwt.Token, errs.Error) {
+	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
+
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, invalidToken
+		}
+
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
+
+	if err != nil {
+		return nil, invalidToken
+	}
+
+	return token, nil
+}
+
 func (u *User) HashPassword() errs.Error {
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 
@@ -52,4 +71,41 @@ func (u *User) signToken(claims jwt.MapClaims) string {
 func (u *User) GenerateToken() string {
 	claims := u.tokenClaim()
 	return u.signToken(claims)
+}
+
+func (u *User) ValidateToken(rawtoken string) errs.Error {
+	token, err := u.parseToken(rawtoken)
+
+	if err != nil {
+		return err
+	}
+
+	var mapClaims jwt.MapClaims
+
+	if claims, ok := token.Claims.(jwt.MapClaims); !ok || !token.Valid {
+
+		return invalidToken
+	} else {
+		mapClaims = claims
+	}
+
+	err = u.bindTokenToUserEntity(mapClaims)
+
+	return err
+}
+
+func (u *User) bindTokenToUserEntity(claims jwt.MapClaims) errs.Error {
+
+	if id, ok := claims["id"].(float64); !ok {
+		return invalidToken
+	} else {
+		u.Id = int(id)
+	}
+
+	if username, ok := claims["username"].(string); !ok {
+		return invalidToken
+	} else {
+		u.Username = username
+	}
+	return nil
 }

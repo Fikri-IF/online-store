@@ -47,5 +47,24 @@ func (userRepo *userRepositoryImpl) FetchByUsername(ctx context.Context, usernam
 	} else {
 		return nil, errs.NewNotFoundError("user not found")
 	}
+}
 
+func (userRepo *userRepositoryImpl) FetchById(ctx context.Context, id int) (*entity.User, errs.Error) {
+	sqlQuery := "SELECT user_id, username, password FROM user WHERE user_id = ?"
+	rows, err := userRepo.Db.QueryContext(ctx, sqlQuery, id)
+
+	if err != nil {
+		return nil, errs.NewInternalServerError(err.Error())
+	}
+
+	user := entity.User{}
+	if rows.Next() {
+		err := rows.Scan(&user.Id, &user.Username, &user.Password)
+		if err != nil {
+			return nil, errs.NewInternalServerError("something went wrong on fetching id")
+		}
+		return &user, nil
+	} else {
+		return nil, errs.NewNotFoundError("user not found")
+	}
 }

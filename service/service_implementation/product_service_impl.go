@@ -9,17 +9,17 @@ import (
 	"online-store-golang/service"
 )
 
-type productServiceImpl struct {
+type ProductServiceImpl struct {
 	Pr repository.ProductRepository
 }
 
-func NewProductService(ProductRepository repository.ProductRepository) service.ProductService {
-	return &productServiceImpl{
-		Pr: ProductRepository,
+func NewProductService(productRepository repository.ProductRepository) service.ProductService {
+	return &ProductServiceImpl{
+		Pr: productRepository,
 	}
 }
 
-func (p *productServiceImpl) FindAll(ctx context.Context) (*model.GetAllProductsResponse, errs.Error) {
+func (p *ProductServiceImpl) FindAll(ctx context.Context) (*model.GetAllProductsResponse, errs.Error) {
 	products, err := p.Pr.FindAll(ctx)
 	if err != nil {
 		return nil, err
@@ -31,7 +31,7 @@ func (p *productServiceImpl) FindAll(ctx context.Context) (*model.GetAllProducts
 	}, nil
 }
 
-func (p *productServiceImpl) FindByCategory(ctx context.Context, id int) (*model.GetAllProductsResponse, errs.Error) {
+func (p *ProductServiceImpl) FindByCategory(ctx context.Context, id int) (*model.GetAllProductsResponse, errs.Error) {
 	products, err := p.Pr.FindByCategory(ctx, id)
 	if err != nil {
 		return nil, err
