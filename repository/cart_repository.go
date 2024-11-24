@@ -10,4 +10,6 @@ import (
 type CartRepository interface {
 	AddItem(ctx context.Context, cartItemPayload *entity.CartItem) errs.Error
 	GetUserCart(ctx context.Context, userId int) ([]model.UserCartResponse, errs.Error)
+	GetItem(ctx context.Context, userId int, productId int) (*entity.CartItem, errs.Error)
+	UpdateQuantity(ctx context.Context, cartItemPayload *entity.CartItem) errs.Error
 }

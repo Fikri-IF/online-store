@@ -30,7 +30,6 @@ func (cartRepo *CartRepositoryImpl) AddItem(ctx context.Context, cartItemPayload
 		cartItemPayload.ProductId,
 		cartItemPayload.Quantity,
 	)
-
 	if err != nil {
 		return errs.NewInternalServerError(err.Error())
 	}
@@ -59,6 +58,43 @@ func (cartRepo *CartRepositoryImpl) GetUserCart(ctx context.Context, userId int)
 		}
 		items = append(items, item)
 	}
-
 	return items, nil
+}
+
+func (cartRepo *CartRepositoryImpl) GetItem(ctx context.Context, userId int, productId int) (*entity.CartItem, errs.Error) {
+	sqlQuery := "select * from cart where user_id = ? and product_id = ?"
+	rows, err := cartRepo.Db.QueryContext(ctx, sqlQuery, userId, productId)
+	if err != nil {
+		return nil, errs.NewInternalServerError(err.Error())
+	}
+	defer rows.Close()
+
+	item := entity.CartItem{}
+
+	if rows.Next() {
+		err := rows.Scan(&item.UserId, &item.ProductId, &item.Quantity)
+		if err != nil {
+			return nil, errs.NewInternalServerError(err.Error())
+		}
+		return &item, nil
+	}
+	return nil, nil
+}
+
+func (cartRepo *CartRepositoryImpl) UpdateQuantity(ctx context.Context, cartItemPayload *entity.CartItem) errs.Error {
+	sqlQuery := `UPDATE cart
+		SET quantity = ?
+		WHERE user_id = ? AND product_id = ?
+	`
+	_, err := cartRepo.Db.ExecContext(
+		ctx,
+		sqlQuery,
+		cartItemPayload.Quantity,
+		cartItemPayload.UserId,
+		cartItemPayload.ProductId,
+	)
+	if err != nil {
+		return errs.NewInternalServerError(err.Error())
+	}
+	return nil
 }

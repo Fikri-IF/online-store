@@ -27,21 +27,39 @@ func (cs *CartServiceImpl) AddItem(ctx context.Context, userId int, addToCartPay
 		return nil, err
 	}
 
-	cartItem := &entity.CartItem{
-		UserId:    userId,
-		ProductId: addToCartPayload.ProductId,
-		Quantity:  addToCartPayload.Quantity,
-	}
-
-	err = cs.Cr.AddItem(ctx, cartItem)
-
+	currentItem, err := cs.Cr.GetItem(ctx, userId, addToCartPayload.ProductId)
 	if err != nil {
 		return nil, err
 	}
+	addsQuantity := addToCartPayload.Quantity
+	if currentItem != nil {
+		addsQuantity += currentItem.Quantity
+	}
+
+	cartItem := &entity.CartItem{
+		UserId:    userId,
+		ProductId: addToCartPayload.ProductId,
+		Quantity:  addsQuantity,
+	}
+	var statusCode int
+
+	if currentItem != nil {
+		err = cs.Cr.UpdateQuantity(ctx, cartItem)
+		if err != nil {
+			return nil, err
+		}
+		statusCode = http.StatusOK
+	} else {
+		err = cs.Cr.AddItem(ctx, cartItem)
+		if err != nil {
+			return nil, err
+		}
+		statusCode = http.StatusCreated
+	}
 
 	return &model.GeneralResponse{
-		StatusCode: http.StatusCreated,
-		Message:    "new item successfully added",
+		StatusCode: statusCode,
+		Message:    "item successfully added",
 		Data:       nil,
 	}, nil
 }
