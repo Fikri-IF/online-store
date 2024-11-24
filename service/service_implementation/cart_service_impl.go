@@ -45,3 +45,16 @@ func (cs *CartServiceImpl) AddItem(ctx context.Context, userId int, addToCartPay
 		Data:       nil,
 	}, nil
 }
+
+func (cs *CartServiceImpl) GetUserCart(ctx context.Context, userId int) (*model.GeneralResponse, errs.Error) {
+
+	items, err := cs.Cr.GetUserCart(ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+	return &model.GeneralResponse{
+		StatusCode: http.StatusOK,
+		Message:    "cart items successfully fetched",
+		Data:       items,
+	}, nil
+}

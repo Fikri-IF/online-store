@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"online-store-golang/entity"
 	"online-store-golang/errs"
+	"online-store-golang/model"
 	"online-store-golang/repository"
 )
 
@@ -34,4 +35,30 @@ func (cartRepo *CartRepositoryImpl) AddItem(ctx context.Context, cartItemPayload
 		return errs.NewInternalServerError(err.Error())
 	}
 	return nil
+}
+
+func (cartRepo *CartRepositoryImpl) GetUserCart(ctx context.Context, userId int) ([]model.UserCartResponse, errs.Error) {
+	sqlQuery := `select c.product_id , p.name , c.quantity, p.price
+		from cart c 
+		left join user u on c.user_id = u.user_id 
+		left join product p on c.product_id = p.product_id 
+		where u.user_id = ?`
+
+	rows, err := cartRepo.Db.QueryContext(ctx, sqlQuery, userId)
+	if err != nil {
+		return nil, errs.NewInternalServerError(err.Error())
+	}
+	defer rows.Close()
+
+	var items []model.UserCartResponse
+	for rows.Next() {
+		item := model.UserCartResponse{}
+		err := rows.Scan(&item.ProductId, &item.ProductName, &item.Quantity, &item.Price)
+		if err != nil {
+			return nil, errs.NewInternalServerError(err.Error())
+		}
+		items = append(items, item)
+	}
+
+	return items, nil
 }

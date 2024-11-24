@@ -11,6 +11,7 @@ import (
 
 type CartController interface {
 	AddToCart(ctx *gin.Context)
+	GetUserCart(ctx *gin.Context)
 }
 
 type CartControllerImpl struct {
@@ -45,5 +46,19 @@ func (c *CartControllerImpl) AddToCart(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(response.StatusCode, response)
+}
+func (c *CartControllerImpl) GetUserCart(ctx *gin.Context) {
+	user, ok := ctx.MustGet("userData").(entity.User)
 
+	if !ok {
+		internalServerErr := errs.NewInternalServerError("something went wrong")
+		ctx.AbortWithStatusJSON(internalServerErr.Status(), internalServerErr)
+	}
+
+	response, err := c.Cs.GetUserCart(ctx, user.Id)
+	if err != nil {
+		ctx.AbortWithStatusJSON(err.Status(), err)
+		return
+	}
+	ctx.JSON(response.StatusCode, response)
 }
