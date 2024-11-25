@@ -22,7 +22,7 @@ func StartApp() {
 	productController := NewProductController(productService)
 
 	cartRepo := repositoryimplementation.NewCartRepository(db)
-	cartService := serviceimplementation.NewCartService(cartRepo)
+	cartService := serviceimplementation.NewCartService(cartRepo, productRepo)
 	cartController := NewCartController(cartService)
 
 	authService := authservice.NewAuthService(userRepo)

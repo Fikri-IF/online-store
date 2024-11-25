@@ -8,17 +8,17 @@ import (
 	"online-store-golang/repository"
 )
 
-type productRepositoryImpl struct {
+type ProductRepositoryImpl struct {
 	Db *sql.DB
 }
 
 func NewProductRepository(Db *sql.DB) repository.ProductRepository {
-	return &productRepositoryImpl{
+	return &ProductRepositoryImpl{
 		Db: Db,
 	}
 }
 
-func (productRepo *productRepositoryImpl) FindAll(ctx context.Context) ([]model.GetProductResponse, errs.Error) {
+func (productRepo *ProductRepositoryImpl) FindAll(ctx context.Context) ([]model.GetProductResponse, errs.Error) {
 	sqlQuery := `select  p.product_id , p.name , p.price , c.name , p.stock 
 		from product p 
 		inner join category c 
@@ -47,7 +47,7 @@ func (productRepo *productRepositoryImpl) FindAll(ctx context.Context) ([]model.
 	}
 	return products, nil
 }
-func (productRepo *productRepositoryImpl) FindByCategory(ctx context.Context, id int) ([]model.GetProductResponse, errs.Error) {
+func (productRepo *ProductRepositoryImpl) FindByCategory(ctx context.Context, id int) ([]model.GetProductResponse, errs.Error) {
 	sqlQuery := `select  p.product_id , p.name , p.price , c.name , p.stock 
 		from product p 
 		inner join category c 
@@ -76,4 +76,27 @@ func (productRepo *productRepositoryImpl) FindByCategory(ctx context.Context, id
 		products = append(products, product)
 	}
 	return products, nil
+}
+
+func (productRepo *ProductRepositoryImpl) FindById(ctx context.Context, id int) (*model.GetProductResponse, errs.Error) {
+	sqlQuery := `select  p.product_id , p.name , p.price , c.name , p.stock 
+		from product p 
+		inner join category c 
+		on c.category_id = p.category
+		where p.product_id = ?`
+	product := model.GetProductResponse{}
+	err := productRepo.Db.QueryRowContext(ctx, sqlQuery, id).Scan(
+		&product.ProductId,
+		&product.ProductName,
+		&product.Price,
+		&product.Category,
+		&product.Stock,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errs.NewNotFoundError("product not found")
+		}
+		return nil, errs.NewInternalServerError(err.Error())
+	}
+	return &product, nil
 }

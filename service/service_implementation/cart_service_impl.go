@@ -13,16 +13,23 @@ import (
 
 type CartServiceImpl struct {
 	Cr repository.CartRepository
+	Pr repository.ProductRepository
 }
 
-func NewCartService(CartRepository repository.CartRepository) service.CartService {
+func NewCartService(CartRepository repository.CartRepository, ProductRepository repository.ProductRepository) service.CartService {
 	return &CartServiceImpl{
 		Cr: CartRepository,
+		Pr: ProductRepository,
 	}
 }
 
 func (cs *CartServiceImpl) AddItem(ctx context.Context, userId int, addToCartPayload *model.AddToCartRequest) (*model.GeneralResponse, errs.Error) {
 	err := helper.ValidateStruct(addToCartPayload)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = cs.Pr.FindById(ctx, addToCartPayload.ProductId)
 	if err != nil {
 		return nil, err
 	}
