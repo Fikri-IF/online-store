@@ -16,10 +16,10 @@ type CartServiceImpl struct {
 	Pr repository.ProductRepository
 }
 
-func NewCartService(CartRepository repository.CartRepository, ProductRepository repository.ProductRepository) service.CartService {
+func NewCartService(cartRepository repository.CartRepository, productRepository repository.ProductRepository) service.CartService {
 	return &CartServiceImpl{
-		Cr: CartRepository,
-		Pr: ProductRepository,
+		Cr: cartRepository,
+		Pr: productRepository,
 	}
 }
 

@@ -13,16 +13,23 @@ import (
 
 type ProductServiceImpl struct {
 	Pr repository.ProductRepository
+	Cr repository.CategoryRepository
 }
 
-func NewProductService(productRepository repository.ProductRepository) service.ProductService {
+func NewProductService(productRepository repository.ProductRepository, categoryRepository repository.CategoryRepository) service.ProductService {
 	return &ProductServiceImpl{
 		Pr: productRepository,
+		Cr: categoryRepository,
 	}
 }
 
 func (p *ProductServiceImpl) Create(ctx context.Context, product *model.ProductRequest) (*model.GeneralResponse, errs.Error) {
 	err := helper.ValidateStruct(product)
+	if err != nil {
+		return nil, err
+	}
+	_, err = p.Cr.FindById(ctx, product.Category)
+
 	if err != nil {
 		return nil, err
 	}

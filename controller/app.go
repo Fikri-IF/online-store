@@ -17,8 +17,12 @@ func StartApp() {
 	userService := serviceimplementation.NewUserService(userRepo)
 	userController := NewUserController(userService)
 
+	categoryRepo := repositoryimplementation.NewCategoryRepository(db)
+	categoryService := serviceimplementation.NewCategoryService(categoryRepo)
+	categoryController := NewCategoryController(categoryService)
+
 	productRepo := repositoryimplementation.NewProductRepository(db)
-	productService := serviceimplementation.NewProductService(productRepo)
+	productService := serviceimplementation.NewProductService(productRepo, categoryRepo)
 	productController := NewProductController(productService)
 
 	cartRepo := repositoryimplementation.NewCartRepository(db)
@@ -46,6 +50,11 @@ func StartApp() {
 		cartRoutes.POST("/", authService.Authentication(), cartController.AddToCart)
 		cartRoutes.GET("/", authService.Authentication(), cartController.GetUserCart)
 		cartRoutes.DELETE("/:productId", authService.Authentication(), cartController.DeleteItem)
+	}
+	categoryRoutes := apiV1.Group("/category")
+	{
+		categoryRoutes.POST("/", categoryController.Create)
+		categoryRoutes.GET("/", categoryController.FindAll)
 	}
 
 	app.Run(":8080")
