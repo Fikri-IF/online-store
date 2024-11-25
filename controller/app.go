@@ -41,8 +41,9 @@ func StartApp() {
 	}
 	productRoutes := apiV1.Group("/product")
 	{
-		productRoutes.GET("/products/:categoryId", productController.FindByCategory)
-		productRoutes.GET("/products", productController.FindAll)
+		productRoutes.GET("/category/:categoryId", productController.FindByCategory)
+		productRoutes.GET("/", productController.FindAll)
+		productRoutes.GET("/:productId", productController.FindById)
 		productRoutes.POST("/", productController.Create)
 	}
 	cartRoutes := apiV1.Group("/cart")

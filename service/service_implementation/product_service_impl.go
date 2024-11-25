@@ -47,7 +47,7 @@ func (p *ProductServiceImpl) Create(ctx context.Context, product *model.ProductR
 	return &model.GeneralResponse{
 		StatusCode: http.StatusCreated,
 		Message:    "product successfully created",
-		Data:       &productEntity,
+		Data:       productEntity,
 	}, nil
 }
 
@@ -72,5 +72,16 @@ func (p *ProductServiceImpl) FindByCategory(ctx context.Context, id int) (*model
 		StatusCode: http.StatusOK,
 		Message:    "products successfully fetched",
 		Products:   products,
+	}, nil
+}
+func (p *ProductServiceImpl) FindById(ctx context.Context, productId int) (*model.GeneralResponse, errs.Error) {
+	product, err := p.Pr.FindById(ctx, productId)
+	if err != nil {
+		return nil, err
+	}
+	return &model.GeneralResponse{
+		StatusCode: http.StatusOK,
+		Message:    "product found",
+		Data:       product,
 	}, nil
 }
