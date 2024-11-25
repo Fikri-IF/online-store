@@ -3,6 +3,7 @@ package repositoryimplementation
 import (
 	"context"
 	"database/sql"
+	"online-store-golang/entity"
 	"online-store-golang/errs"
 	"online-store-golang/model"
 	"online-store-golang/repository"
@@ -16,6 +17,24 @@ func NewProductRepository(Db *sql.DB) repository.ProductRepository {
 	return &ProductRepositoryImpl{
 		Db: Db,
 	}
+}
+
+func (productRepo *ProductRepositoryImpl) Create(ctx context.Context, product *entity.Product) errs.Error {
+	sqlQuery := `insert into product (name, price, category, stock)
+		values (?, ?, ?, ?)`
+	result, err := productRepo.Db.ExecContext(ctx, sqlQuery, product.ProductName, product.Price, product.Category, product.Stock)
+	if err != nil {
+		return errs.NewInternalServerError(err.Error())
+	}
+	id, err := result.LastInsertId()
+	if err != nil {
+		return errs.NewInternalServerError("error from getting last insert Id")
+	}
+
+	product.ProductId = int(id)
+
+	return nil
+
 }
 
 func (productRepo *ProductRepositoryImpl) FindAll(ctx context.Context) ([]model.GetProductResponse, errs.Error) {

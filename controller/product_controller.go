@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"online-store-golang/errs"
 	"online-store-golang/helper"
+	"online-store-golang/model"
 	"online-store-golang/service"
 
 	"github.com/gin-gonic/gin"
@@ -10,6 +12,7 @@ import (
 type ProductController interface {
 	FindAll(ctx *gin.Context)
 	FindByCategory(ctx *gin.Context)
+	Create(ctx *gin.Context)
 }
 
 type ProductControllerImpl struct {
@@ -40,6 +43,23 @@ func (p *ProductControllerImpl) FindByCategory(ctx *gin.Context) {
 		return
 	}
 	response, err := p.Ps.FindByCategory(ctx, categoryId)
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(err.Status(), err)
+		return
+	}
+	ctx.JSON(response.StatusCode, response)
+}
+func (p *ProductControllerImpl) Create(ctx *gin.Context) {
+	productPayload := &model.ProductRequest{}
+
+	if err := ctx.ShouldBindJSON(productPayload); err != nil {
+		errBindJson := errs.NewUnprocessableEntityError("invalid json body request")
+		ctx.AbortWithStatusJSON(errBindJson.Status(), errBindJson.Error())
+		return
+	}
+
+	response, err := p.Ps.Create(ctx, productPayload)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(err.Status(), err)

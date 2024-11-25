@@ -3,7 +3,9 @@ package serviceimplementation
 import (
 	"context"
 	"net/http"
+	"online-store-golang/entity"
 	"online-store-golang/errs"
+	"online-store-golang/helper"
 	"online-store-golang/model"
 	"online-store-golang/repository"
 	"online-store-golang/service"
@@ -17,6 +19,29 @@ func NewProductService(productRepository repository.ProductRepository) service.P
 	return &ProductServiceImpl{
 		Pr: productRepository,
 	}
+}
+
+func (p *ProductServiceImpl) Create(ctx context.Context, product *model.ProductRequest) (*model.GeneralResponse, errs.Error) {
+	err := helper.ValidateStruct(product)
+	if err != nil {
+		return nil, err
+	}
+
+	productEntity := &entity.Product{
+		ProductName: product.ProductName,
+		Price:       product.Price,
+		Category:    product.Category,
+		Stock:       product.Stock,
+	}
+	err = p.Pr.Create(ctx, productEntity)
+	if err != nil {
+		return nil, err
+	}
+	return &model.GeneralResponse{
+		StatusCode: http.StatusCreated,
+		Message:    "product successfully created",
+		Data:       &productEntity,
+	}, nil
 }
 
 func (p *ProductServiceImpl) FindAll(ctx context.Context) (*model.GetAllProductsResponse, errs.Error) {
