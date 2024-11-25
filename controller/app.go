@@ -12,6 +12,9 @@ import (
 func StartApp() {
 	config := configuration.New()
 	db := configuration.NewDatabase(config)
+	configuration.HandleRequiredTables(db)
+
+	redisClient := configuration.NewRedis(config)
 
 	userRepo := repositoryimplementation.NewUserRepository(db)
 	userService := serviceimplementation.NewUserService(userRepo)
@@ -22,7 +25,7 @@ func StartApp() {
 	categoryController := NewCategoryController(categoryService)
 
 	productRepo := repositoryimplementation.NewProductRepository(db)
-	productService := serviceimplementation.NewProductService(productRepo, categoryRepo)
+	productService := serviceimplementation.NewProductService(productRepo, categoryRepo, redisClient)
 	productController := NewProductController(productService)
 
 	cartRepo := repositoryimplementation.NewCartRepository(db)
