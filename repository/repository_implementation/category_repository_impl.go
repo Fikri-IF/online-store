@@ -71,3 +71,12 @@ func (cr *CategoryRepositoryImpl) FindAll(ctx context.Context) ([]model.Category
 	}
 	return categories, nil
 }
+
+func (cr *CategoryRepositoryImpl) Delete(ctx context.Context, id int) errs.Error {
+	sqlQuery := "delete from category where category_id = ?"
+	_, err := cr.Db.ExecContext(ctx, sqlQuery, id)
+	if err != nil {
+		return errs.NewInternalServerError(err.Error())
+	}
+	return nil
+}

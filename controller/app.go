@@ -59,6 +59,7 @@ func StartApp() {
 	{
 		categoryRoutes.POST("/", categoryController.Create)
 		categoryRoutes.GET("/", categoryController.FindAll)
+		categoryRoutes.DELETE("/:categoryId", categoryController.Delete)
 	}
 
 	app.Run(":8080")

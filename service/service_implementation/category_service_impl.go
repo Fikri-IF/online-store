@@ -50,3 +50,19 @@ func (cs *CategoryServiceImpl) FindAll(ctx context.Context) (*model.GetAllCatego
 		Categories: categories,
 	}, nil
 }
+
+func (cs *CategoryServiceImpl) Delete(ctx context.Context, id int) (*model.GeneralResponse, errs.Error) {
+	category, err := cs.Cr.FindById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	err = cs.Cr.Delete(ctx, category.CategoryId)
+	if err != nil {
+		return nil, err
+	}
+	return &model.GeneralResponse{
+		StatusCode: http.StatusOK,
+		Message:    "category successfully deleted",
+		Data:       nil,
+	}, nil
+}

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"online-store-golang/errs"
+	"online-store-golang/helper"
 	"online-store-golang/model"
 	"online-store-golang/service"
 
@@ -11,6 +12,7 @@ import (
 type CategoryController interface {
 	Create(ctx *gin.Context)
 	FindAll(ctx *gin.Context)
+	Delete(ctx *gin.Context)
 }
 
 type CategoryControllerImpl struct {
@@ -42,6 +44,22 @@ func (cc *CategoryControllerImpl) Create(ctx *gin.Context) {
 }
 func (cc *CategoryControllerImpl) FindAll(ctx *gin.Context) {
 	response, err := cc.Cs.FindAll(ctx)
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(err.Status(), err)
+		return
+	}
+
+	ctx.JSON(response.StatusCode, response)
+}
+func (cc *CategoryControllerImpl) Delete(ctx *gin.Context) {
+	categoryId, errParam := helper.GetParamId(ctx, "categoryId")
+
+	if errParam != nil {
+		ctx.AbortWithStatusJSON(errParam.Status(), errParam)
+		return
+	}
+	response, err := cc.Cs.Delete(ctx, categoryId)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(err.Status(), err)
