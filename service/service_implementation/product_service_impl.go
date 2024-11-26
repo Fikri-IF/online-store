@@ -31,6 +31,7 @@ func NewProductService(productRepository repository.ProductRepository, categoryR
 }
 
 func (p *ProductServiceImpl) Create(ctx context.Context, product *model.ProductRequest) (*model.GeneralResponse, errs.Error) {
+
 	err := helper.ValidateStruct(product)
 	if err != nil {
 		return nil, err
@@ -51,6 +52,12 @@ func (p *ProductServiceImpl) Create(ctx context.Context, product *model.ProductR
 	if err != nil {
 		return nil, err
 	}
+	cacheKey := "all_products"
+	_, redisErr := p.Cache.Del(ctx, cacheKey).Result()
+	if redisErr != nil {
+		return nil, errs.NewInternalServerError("error deleting redis key")
+	}
+
 	return &model.GeneralResponse{
 		StatusCode: http.StatusCreated,
 		Message:    "product successfully created",
@@ -151,6 +158,11 @@ func (p *ProductServiceImpl) Delete(ctx context.Context, productId int) (*model.
 	err = p.Pr.Delete(ctx, product.ProductId)
 	if err != nil {
 		return nil, err
+	}
+	cacheKey := "all_products"
+	_, redisErr := p.Cache.Del(ctx, cacheKey).Result()
+	if redisErr != nil {
+		return nil, errs.NewInternalServerError("error deleting redis key")
 	}
 	return &model.GeneralResponse{
 		StatusCode: http.StatusOK,
