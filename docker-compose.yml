@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: online_shop_quack
+    ports:
+      - "3307:3306"
+    networks:
+      - default
+
+  redis:
+    image: redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "6379:6379"
+    networks:
+      - default
+
+  qwackolshop:
+    image: pekreee/qwack-olshop-app:v1
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./.env:/root/.env
+    networks:
+      - default
+networks:
+  default:
+    driver: bridge
