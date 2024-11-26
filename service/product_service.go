@@ -11,4 +11,5 @@ type ProductService interface {
 	FindAll(ctx context.Context) (*model.GetAllProductsResponse, errs.Error)
 	FindByCategory(ctx context.Context, id int) (*model.GetAllProductsResponse, errs.Error)
 	FindById(ctx context.Context, productId int) (*model.GeneralResponse, errs.Error)
+	Delete(ctx context.Context, productId int) (*model.GeneralResponse, errs.Error)
 }

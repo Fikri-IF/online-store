@@ -119,3 +119,12 @@ func (productRepo *ProductRepositoryImpl) FindById(ctx context.Context, id int) 
 	}
 	return &product, nil
 }
+
+func (productRepo *ProductRepositoryImpl) Delete(ctx context.Context, id int) errs.Error {
+	sqlQuery := "delete from product where product_id = ?"
+	_, err := productRepo.Db.ExecContext(ctx, sqlQuery, id)
+	if err != nil {
+		return errs.NewInternalServerError(err.Error())
+	}
+	return nil
+}

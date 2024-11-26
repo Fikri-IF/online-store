@@ -48,6 +48,7 @@ func StartApp() {
 		productRoutes.GET("/", productController.FindAll)
 		productRoutes.GET("/:productId", productController.FindById)
 		productRoutes.POST("/", productController.Create)
+		productRoutes.DELETE("/:productId", productController.Delete)
 	}
 	cartRoutes := apiV1.Group("/cart")
 	{

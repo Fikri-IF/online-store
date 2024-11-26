@@ -143,3 +143,18 @@ func (p *ProductServiceImpl) FindById(ctx context.Context, productId int) (*mode
 		Data:       product,
 	}, nil
 }
+func (p *ProductServiceImpl) Delete(ctx context.Context, productId int) (*model.GeneralResponse, errs.Error) {
+	product, err := p.Pr.FindById(ctx, productId)
+	if err != nil {
+		return nil, err
+	}
+	err = p.Pr.Delete(ctx, product.ProductId)
+	if err != nil {
+		return nil, err
+	}
+	return &model.GeneralResponse{
+		StatusCode: http.StatusOK,
+		Message:    "product successfully deleted",
+		Data:       nil,
+	}, nil
+}
