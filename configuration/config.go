@@ -1,10 +1,7 @@
 package configuration
 
 import (
-	"online-store-golang/errs"
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
 type Config interface {
@@ -19,7 +16,7 @@ func (config *configImpl) Get(key string) string {
 }
 
 func New() Config {
-	err := godotenv.Load(".env")
-	errs.PanicIfError(err)
+	// err := godotenv.Load(".env")
+	// errs.PanicIfError(err)
 	return &configImpl{}
 }
